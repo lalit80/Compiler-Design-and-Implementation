@@ -1,0 +1,22 @@
+order vertices in decreasing order of degree
+pick highest and color it followed by coloring its neighbors
+pick next highest until no more vertex left
+
+for a vertex pick a color from (available - neighbors) and if empty assign a new color
+
+
+
+available = {}
+pick next vertex v of higher degree
+	color(v)
+	for each neighbor x of v
+		color(x)
+
+color()
+	neighbors = color of its neighbors
+	if (available -  neighbors) = {}
+		get new color add it to available and color it to current vertex
+	else if (available -  neighbors) != {}
+		pick a color from the set and color it to current vertex
+
+

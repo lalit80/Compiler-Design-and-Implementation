@@ -1,0 +1,67 @@
+
+-- Each instruction is separated by one or more '\n'
+
+P   := '(' S R ')'
+S   := '$'[a-z][a-z0-9]*
+R   := T | T R
+T   := '(' S [0-9]+ I ')'
+I   := ii | ii I | lb ii I | lb ii | CI
+lb  := ':' [a-z][a-z0-9]*
+ii  := M "<-" G | G "<-" M | "return" | A | B
+M   := "mem" G '#'d8 | "mem" "FP" '#'d8
+d8  := "-0x"[0-9A-F]*[08] | "0x"[0-9A-F]*[08]   -- Hex Numbers divisible by 8
+G   := G32 | G64
+V32 := G32 | '#'[0-9]+ 
+V64 := G64 | '#'[0-9]+ 
+G32 := W0 |.......| W28
+G64 := X0 |.......| X28 | SP
+A   := G32 OP V32 | G64 OP V64 | G64 "<-" G64 BO V64 | G32 "<-" G32 BO V32
+BO  := + | - | * | << | >>              -- >> and << are shift operators
+OP  := BO "<-"
+CI  := CB CMP lb
+CMP := G32 CO G32 | G64 CO G64 | G32 CO '#'[0-9]+
+CO  := == | != | <= | >= | < | > 
+
+
+
+Your task is to check whether given text follows given rules and 
+is correct as per the constraints discussed in class.
+Return the equivalent assembly translation of the input.
+
+
+   sbr translate(s : &[u8], d : &var [u8])
+       -- input is given in array s and write trasnlated assembly in d
+       -- You can assume there is enough space in d
+   rbs
+
+
+
+($start
+
+    ($s1 2
+        mem W0 #0x08 <- W1                              Str W1, [W0, #0x08]
+        mem FP #0x08 <- W1                              Str W1, [FP, #0x08]
+        W1 <- mem W0 #0x08                              Ldr W1, [W0, #0x08]
+        B $s2                                           B   s2
+        :lb X0 <- X2 + x3                               lb: Add X0, X2, X3
+    )
+
+    ($s2 0
+        X0 <- X2 - #10                                  Sub X0, X2, #10
+        X0 <- X2 - x3                                   Sub X0, X2, X3
+        X0 <- X2 * x3                                   Mul X0, X2, X3
+        X0 <- X2 << x3                                  LSL X0, X2, X3
+        X0 <- X2 >> x3                                  LSR X0, X2, X3
+
+        X0 +<- #25                                      Add X0, X0, #25
+        X0 +<- X2                                       Add X0, X0, X2
+        X0 -<- X2                                       Sub X0, X0, X2
+        X0 *<- X2                                       Mul X0, X0, X2
+
+        return                                          Mov PC, LR
+    )
+
+    ($s3 2
+    
+    )
+)
